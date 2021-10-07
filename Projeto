@@ -1,0 +1,168 @@
+"""
+Jogo Senha - Escopo
+
+1- Regras Gerais
+        - Definir Senha para o jogador tentar descobrir
+            - Sequência de 4 cores entre amarelo, verde, azul, roxo, vermelho e laranja
+                - Não pode repetir as cores!
+
+        - O que tem que adivinhar, chuta as 4 cores
+
+        - O programa retorna:
+            - Branco: Cor certa e Posição certa
+            - Preto: Cor certa, Posição errada
+            - Vazio: Nada certo
+
+2- Sobre o código
+    - Primeiro Testar eu definindo a senha
+        * Opcional: Depois criar um random
+    - Criar a senha dentro de uma lista
+    - Limitação de tanto chutes de senha limitados e limitação no número de pinos de cada cor.
+        - 10 Chutes no Total
+        - 10 Chutes para cada cor
+        - Não contam pinos usados para definir senha
+        - Deve aparecer uma mensagem de feedback do chute, e apresentação de quantos chutes ele tem, e quantos pinos de
+          cada cor
+        - Lembre-se de fornecer também os pinos brancos, pretos e vazios.
+
+        Exemplo:
+        # Caso falte 4 chutes antes de acabar o jogo sem o jogador acertar a senha, tenha 4 pinos vermelhos, 2 pinos
+        amarelos, 8 pinos roxos, 6 pinos verdes, 9 pinos laranjas e 7 pinos azuis.
+
+        # senha = [‘laranja’, ‘verde’, ‘amarelo’, ‘vermelho’]
+        # chute = [‘roxo’, ‘amarelo’, ‘amarelo’, ‘vermelho’]
+
+            [‘vazio’, ‘preto’, ‘branco’, ‘branco’]
+            Você tem 4 chutes disponíveis
+            Você tem 4 pinos vermelhos disponíveis
+            Você tem 2 pinos amarelos disponíveis
+            Você tem 8 pinos roxos disponíveis
+            Você tem 6 pinos verdes disponíveis
+            Você tem 9 pinos laranjas disponíveis
+            Você tem 7 pinos azuis disponíveis
+
+Obs.: O chute pode ter valores repetidos, apenas a senha não pode ter valores repetidos.
+
+- Formato do input:
+    - Todas as cores em um único input separadas por vírgula
+    - Tratar para que o input não seja case sensitive
+"""
+
+from random import choice
+
+#0- Sobre quantidade de jogadores, palpites & pinos
+jogadores = 0
+num_palpites = 5
+num_Amarelo = num_Verde = num_Azul = num_Roxo = num_Vermelho = num_Laranja = 5
+
+#1- Sobre definição de senha
+cores_lista = ['Amarelo', 'Verde', 'Azul', 'Roxo', 'Vermelho', 'Laranja']
+while jogadores != 1 and jogadores != 2:
+    jogadores = int(input('Insira a quantidade de jogadores (1 ou 2): '))
+senha = []
+if jogadores == 2:
+    cor_senha = input(f'JOGADOR 1: escolha a primeira cor entre {", ".join(cores_lista)}: ').capitalize()
+    while cor_senha not in cores_lista:
+        cor_senha = input(f'Cor Inválida! Escolha uma cor entre {", ".join(cores_lista)}: ').capitalize()
+    senha = [cor_senha]
+    while len (senha) < 4:
+        cores_lista.remove(cor_senha)
+        cor_senha = input(f'Escolha a próxima cor entre {", ".join(cores_lista)}: ').capitalize()
+        while cor_senha not in cores_lista:
+            cor_senha = input(f'Cor Inválida! Escolha uma cor entre {", ".join(cores_lista)}: ').capitalize()
+        senha.append(cor_senha)
+elif jogadores == 1:
+    while len (senha) < 4:
+        cor_senha = choice(cores_lista)
+        senha.append(cor_senha)
+        cores_lista.remove(cor_senha)
+print()
+print(f'Senha definida com sucesso!')
+print()
+
+# 2- Sobre definir os palpites v2
+cores_lista = ['Amarelo', 'Verde', 'Azul', 'Roxo', 'Vermelho', 'Laranja']
+palpite = []
+while palpite != senha:
+    palpite = []
+    palpite_temp = []
+    while len(palpite_temp)!= 4:
+        palpite_temp =input(f'JOGADOR {jogadores}: Escolha QUATRO cores entre '
+                            f'{", ".join(cores_lista)} separadas apenas por uma vírgula: ').split(',')
+    for cor_palpite in palpite_temp:
+        cor_palpite=cor_palpite.strip().capitalize()
+        while not cor_palpite in cores_lista:
+            cor_palpite=input(f'Palpite "{cor_palpite}" Inválido! Substitua-o por '
+                              f'uma das seguintes cores {", ".join(cores_lista)}: ').strip().capitalize()
+        palpite.append(cor_palpite)
+    if palpite == senha:
+        print()
+        print('Parabéns!!! Você ganhou! =)')
+        break
+    print()
+    print(f'Seu palpite: {palpite}')
+
+#3- Sobre o Feedback principal
+    feedback=['Vazio','Vazio','Vazio','Vazio']
+    for n,i_palpite in enumerate(palpite):
+        if i_palpite == 'Amarelo':
+            num_Amarelo -= 1
+        elif i_palpite == 'Verde':
+            num_Verde -= 1
+        elif i_palpite == 'Azul':
+            num_Azul -= 1
+        elif i_palpite == 'Roxo':
+            num_Roxo -= 1
+        elif i_palpite == 'Vermelho':
+            num_Vermelho -= 1
+        elif i_palpite == 'Laranja':
+            num_Laranja -= 1
+        if i_palpite in senha:
+            if n == senha.index(i_palpite):
+                feedback.insert(n,'Branco')
+                feedback.pop(n+1)
+            else:
+                feedback.insert(n, 'Preto')
+                feedback.pop(n + 1)
+    print (f'Seu feedback: {feedback}')
+
+#4 - Sobre a qtd. de tentativas e Perder
+    num_palpites-=1
+    if num_palpites == 0:
+        print ('Que pena, você perdeu... =(')
+        break
+    if (num_Amarelo <= 0 and 'Amarelo' in senha) or (num_Verde <= 0 and 'Verde' in senha)\
+            or (num_Azul <= 0 and 'Azul' in senha) or (num_Roxo <= 0 and 'Roxo' in senha)\
+            or (num_Vermelho <= 0 and 'Vermelho' in senha) or (num_Laranja <= 0 and 'Laranja' in senha):
+        print('Que pena, você perdeu... =( Acabaram seus pinos de uma cor que tinha na senha...')
+        break
+    else:
+        print()
+        print(f'Você tem {num_palpites} tentativas disponíveis')
+        print()
+        print(f'Você tem {num_Amarelo} pinos amarelos disponíveis')
+        print(f'Você tem {num_Verde} pinos verdes disponíveis')
+        print(f'Você tem {num_Azul} pinos azuis disponíveis')
+        print(f'Você tem {num_Roxo} pinos roxos disponíveis')
+        print(f'Você tem {num_Vermelho} pinos vermelhos disponíveis')
+        print(f'Você tem {num_Laranja} pinos laranjas disponíveis')
+        print()
+    try:
+        if num_Amarelo == 0:
+            cores_lista.remove('Amarelo')
+        elif num_Verde <= 0:
+            cores_lista.remove('Verde')
+        elif num_Azul <= 0:
+            cores_lista.remove('Azul')
+        elif num_Roxo <= 0:
+            cores_lista.remove('Roxo')
+        elif num_Vermelho <= 0:
+            cores_lista.remove('Vermelho')
+        elif num_Laranja <= 0:
+            cores_lista.remove('Laranja')
+    except:
+        pass
+
+#5 Sobre Encerrar o jogo
+print()
+print(f'A senha era {senha}')
